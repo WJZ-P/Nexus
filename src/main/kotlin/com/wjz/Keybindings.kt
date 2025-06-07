@@ -1,5 +1,6 @@
 package com.wjz
 
+import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.option.KeyBinding
@@ -24,7 +25,7 @@ object KeyBindings {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             while (openGuiKey.wasPressed()) {
                 // 打开GUI
-                client.setScreen(ExampleGui())
+                UScreen.displayScreen(ExampleGui())
             }
         }
     }

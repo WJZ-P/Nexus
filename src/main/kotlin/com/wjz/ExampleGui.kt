@@ -17,7 +17,6 @@ import gg.essential.elementa.layoutdsl.Modifier
 import gg.essential.elementa.layoutdsl.gradient
 
 class ExampleGui : WindowScreen(ElementaVersion.V8) {
-    val logger = LogManager.getLogger("wjz-nexus")
 
     init {
         //创建一个"新建便利贴"按钮的背景块
