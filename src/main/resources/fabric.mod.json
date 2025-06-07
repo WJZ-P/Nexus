@@ -1,32 +1,38 @@
 {
-  "schemaVersion": 1,
-  "id": "wjz-nexus",
-  "version": "${version}",
-  "name": "Nexus",
-  "description": "A mod that can ",
-  "authors": [],
-  "contact": {},
-  "license": "All-Rights-Reserved",
-  "icon": "assets/wjz-nexus/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "fabric-datagen": [
-      "com.wjz.client.nexusDataGenerator"
-    ],
-    "client": [
-      "com.wjz.client.nexusClient"
-    ],
-    "main": [
-      "com.wjz.nexus"
-    ]
-  },
-  "mixins": [
-    "wjz-nexus.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=${loader_version}",
-    "fabric-language-kotlin": ">=${kotlin_loader_version}",
-    "fabric": "*",
-    "minecraft": "${minecraft_version}"
-  }
+	"schemaVersion": 1,
+	"id": "wjz-nexus",
+	"version": "${version}",
+	"name": "Nexus",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/wjz-nexus/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "com.wjz.Nexus",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"wjz-nexus.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.16.5",
+		"java": ">=8",
+		"fabric": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
 }
