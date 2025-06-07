@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "wjz-nexus",
+  "version": "${version}",
+  "name": "Nexus",
+  "description": "A mod that can ",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/wjz-nexus/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.wjz.client.nexusDataGenerator"
+    ],
+    "client": [
+      "com.wjz.client.nexusClient"
+    ],
+    "main": [
+      "com.wjz.nexus"
+    ]
+  },
+  "mixins": [
+    "wjz-nexus.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
