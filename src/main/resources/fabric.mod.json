@@ -3,15 +3,15 @@
 	"id": "wjz-nexus",
 	"version": "${version}",
 	"name": "Nexus",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "一个优雅的 Minecraft 联机解决方案",
 	"authors": [
-		"Me!"
+		"WJZ_P"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/WJZ-P/Nexus",
+		"sources": "https://github.com/WJZ-P/Nexus"
 	},
-	"license": "CC0-1.0",
+	"license": "CC BY-NC 4.0",
 	"icon": "assets/wjz-nexus/icon.png",
 	"environment": "*",
 	"entrypoints": {
