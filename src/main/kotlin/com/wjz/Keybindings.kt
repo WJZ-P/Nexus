@@ -1,5 +1,6 @@
 package com.wjz
 
+import com.wjz.guiExamples.ExampleGui
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
@@ -23,7 +24,7 @@ object KeyBindings {
 
         // 注册按键事件
         ClientTickEvents.END_CLIENT_TICK.register { client ->
-            while (openGuiKey.wasPressed()) {
+            if (openGuiKey.wasPressed()) {
                 // 打开GUI
                 UScreen.displayScreen(ExampleGui())
             }
