@@ -14,5 +14,6 @@ object Nexus : ModInitializer {
         
         // 注册按键绑定
         KeyBindings.register()
+
     }
 }
