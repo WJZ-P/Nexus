@@ -28,6 +28,7 @@ class ExampleGui : WindowScreen(ElementaVersion.V8) {
     // In addition, it will construct and provide us with an instance of [Window]
     // that we can use as we need.
 
+
     init {
         //创建一个检查器
         Inspector(window).constrain {
