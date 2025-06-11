@@ -57,8 +57,8 @@ open class BaseButton(
         buttonText.setText(newText)
     }
 
-    // 添加悬停时的工具提示
-    fun withTooltip(text: String) = apply {
+    // 添加悬停时的提示
+    fun withTip(text: String) = apply {
         this.onMouseEnter {
             // 这里可以添加自定义tooltip组件
         }
@@ -69,5 +69,4 @@ open class BaseButton(
         super.afterInitialization()
         buttonText childOf this
     }
-
 }
