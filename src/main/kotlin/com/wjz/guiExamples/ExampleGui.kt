@@ -2,32 +2,17 @@ package com.wjz.guiExamples
 
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
-import gg.essential.elementa.components.*
+import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIText
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
-import gg.essential.elementa.layoutdsl.Modifier
-import gg.essential.elementa.layoutdsl.gradient
 import java.awt.Color
 
-/**
- * ExampleGui is a fully fleshed example of a lot of Elementa's features
- * and how to effectively use them. This example is a "sticky note pad"
- * where users can create, delete, move, and write on little sticky notes.
- *
- * The example won't look particularly pretty, but that is up to the programmer
- * to design their GUIs how they wish.
- */
 class ExampleGui : WindowScreen(ElementaVersion.V8) {
-    // Our ExampleGui class will extend from WindowScreen
-    // which is a subclass of GuiScreen that will call all mouse/keyboard
-    // events for us.
-    // In addition, it will construct and provide us with an instance of [Window]
-    // that we can use as we need.
-
 
     init {
         //创建一个检查器
@@ -36,110 +21,23 @@ class ExampleGui : WindowScreen(ElementaVersion.V8) {
             y = 10.pixel()
         } childOf window
 
-        // Here we start outlining all of our components. This code doesn't
-        // have to be inside an initializer block, and if we needed to access
-        // these components elsewhere in code, we would need to make them top-level,
-        // but since we don't it's a matter of preference whether to make them
-        // properties or not.
-
-        // This is a basic colored block that will be the background of our "create-note" button.
-        // The first parameter to the UIBlock constructor is an initial color, in our case,
-        // a nice pastel light-gray.
-        // This component will be a child of the window because it will be positioned
-        // in the top left of the window, and it doesn't make sense for it to have any other parent.
         val createNoteButton = UIBlock(Color(24, 183, 231)).constrain {
-            // Position ourselves 2 pixels from the top & 2 pixels from the right
-            // of our parent component (the window). The number 2 is fairly arbitrary
-            // in this case, its just preference how far we want it from the sides of
-            // the window's edge.
             x = 2.pixels()
             y = 2.pixels()
 
-            // We want our button to be wide enough to accommodate all the text inside it,
-            // therefore we want to tell this component to be as wide as the sum of its children,
-            // and for this we use a [ChildBasedSizeConstraint].
-            // However, we also want to have a little padding on the left/right sides of the button
-            // so the text doesn't just look mashed up against the sides, so we need to add another
-            // constraint, in this case 4 pixels, causing the final width of this block to be
-            // the sum of its children's widths plus 4 more pixels.
             width = ChildBasedSizeConstraint() + 4.pixels()
 
-            // The same applies for the height of this button as does for the width,
-            // we want to be as tall as our children, with a little padding.
-            // However, the difference here is that we are using a [ChildBasedMaxSizeConstraint].
-            // This constraint evaluates to the single largest size (in our case, height) of
-            // this component's children. The reason for the difference here is that we could have
-            // multiple children going horizontally inside this button. We don't want our height to
-            // be the sum of their heights, rather, we want to simply be as tall as the tallest of our children.
-            // In our case we do only have one child, so this is effectively the same as using
-            // a [ChildBasedSizeConstraint].
-            // If instead we wanted this button to have multiple children going vertically,
-            // we could swap the width & height constraints.
             height = ChildBasedMaxSizeConstraint() + 4.pixels()
         }.onMouseClick {
-            // We discard our parameter (the UIClickEvent) for multiple reasons.
-            // For one, we don't care about the mouse's position because we already know that it is
-            // inside this component, Elementa wouldn't fire this event otherwise.
-            // Secondly, we don't care about the mouse button because for simplicity we are going to
-            // say all mouse clicks (left, right, middle, etc.) have the same action.
-
-            // Now, since we're a button, we're going to want to run some code when the mouse
-            // is clicked on us. For this, we simply give this component a lambda to run
-            // "onMouseClick". In our case, we want to create a new sticky note, and place it
-            // in the window.
-            // We don't need to manually add a [constrain] block to this sticky note because
-            // the [StickyNote] constructor will handle all the constraint setup for us.
             StickyNote() childOf window
         }.onMouseEnter {
-            // We also want to give the user some visual indication that they are currently
-            // hovering on this button, so we will animate our background to a slightly
-            // darker hue.
 
-            // The mouse enter lambda's have the UIComponent they were called on as
-            // the [this] receiver, which in simpler terms means that in this scope,
-            // [this] refers to our UIBlock ("createNoteButton").
-            // For clarity, the `this.` before the call to [animate] is explicit,
-            // but in the future it will be omitted, just keep in mind how [animate] is
-            // being referenced.
-            // The [animate] helper lets the programmer describe an animation,
-            // and start it right away. It is possible to construct an animation at a different
-            // point in time than when it is started, but in practice this is rare,
-            // so the [animate] function will start the animation as soon as it is called.
             this.animate {
-                // We want to animate solely our color attribute,
-                // so we make a call to setColorAnimation to describe how we want
-                // to change that color attribute.
-                setColorAnimation(
-                    // The first parameter is the "strategy" we want our animation to follow.
-                    // This essentially means how the color should get from the start (the current color),
-                    // to the end (the target color).
-                    // Look at the [Animations] class for all predefined options, as well
-                    // as a link to what they all look like.
-                    // In our case we pick a simple exponential-out algorithm.
-                    Animations.OUT_EXP,
-                    // Next, we need to specify how long it should take this animation to complete in seconds.
-                    // In our case, we want this animation to last half a second.
-                    0.5f,
-                    // Third, we need to specify what our target constraint is.
-                    // In our case, it's just a darker color. This parameter can be any constraint
-                    // that would be valid to have specified in the [constraint] block.
-                    Color(120, 120, 100).toConstraint(),
-                    // And finally, the delay in seconds before this animation should begin.
-                    // Note that this parameter is optional, and defaults to 0, but
-                    // it has been explicitly passed in this example so the reader
-                    // is aware it exists. It will be omitted in the future, unless necessary.
-                    0f
-                )
+
+                setColorAnimation(Animations.OUT_EXP, 0.5f, Color(120, 120, 100).toConstraint(), 0f)
             }
         }.onMouseLeave {
-            // When the user's mouse leaves this component, we want to animate our background
-            // back to our original, lighter color.
 
-            // This call to animate is the same as the call in [onMouseEnter],
-            // but we simply change the target color constraint back to the original
-            // color. Keep in mind that it IS completely safe to start an animation
-            // while another animation is currently active, it will simply start from where
-            // the active animation is currently at.
             animate {
                 setColorAnimation(
                     Animations.OUT_EXP,
@@ -150,45 +48,10 @@ class ExampleGui : WindowScreen(ElementaVersion.V8) {
             }
         } childOf window
 
-        // Now, we are going to construct the text of the "create-note" button. We set
-        // the parent of this component to be the previously constructed block,
-        // because we want all of our positioning to be relative to it.
-        // There is no need to save this component to a variable because we are never
-        // going to reference it. It won't have any children, nor will the text inside it
-        // ever change.
-
-        // The first parameter to [UIText] is the initial text of the component.
-        // The second. [shadow], parameter is whether the text should draw with a shadow.
         UIText("Create notes!", shadow = false).constrain {
-            // Again, we position ourselves 2 pixels from the left of our parent
-            // to give this text some padding. However, in this case, the number 2 isn't simply
-            // arbitrary, it was specially picked. If you recall from above, we set [createNoteButton]'s
-            // height to have 4 pixels of padding on both the horizontal & vertical, which means
-            // that to be perfectly centered, the text would start 2 pixels from the left-side of the button.
             x = 2.pixels()
-            // Now, if you noticed, the point of the number 2 above was to center the text horizontally,
-            // which worked, but is hard to manage. Say we decide we want our button to have a little more padding,
-            // we'd have to remember to change it in both places.
-            // Luckily, centering a component on its parent is a very common action, therefore there
-            // is a constraint specialized for this, [CenterConstraint]. The center constraint
-            // will perfectly center this text vertically, in our case, 2 pixels from the top.
             y = CenterConstraint()
-
-            // We have no need to specify the width & height of this component, because
-            // text itself inherently has width & height, so by default, this component's
-            // width & height are set to its text's width & height.
-
-            // However, maybe normal minecraft text is a little small for our liking.
-            // We want to make sure this button is visible in the top left corner, so lets make
-            // it bigger than normal text.
-            // The number 2 here indicates text should be 2x the normal. We could have also done
-            // (0.5f).pixels(), or (1.5f).pixels(), etc.
             textScale = 2.pixels()
-
-            // On the same train of thought, we also want to color this text a little.
-            // A darker green color should suffice.
-            // The [toConstraint] extension function is simply a convenient helper for
-            // constructing an instance of [ConstantColorConstraint].
             color = Color.GREEN.darker().toConstraint()
         } childOf createNoteButton
 

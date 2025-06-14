@@ -1,5 +1,6 @@
 package com.wjz
 
+import com.wjz.listeners.MainMenuListener
 import net.fabricmc.api.ModInitializer
 import org.apache.logging.log4j.LogManager
 
@@ -11,9 +12,11 @@ object Nexus : ModInitializer {
         // However, some things (like resources) may still be uninitialized.
         // Proceed with mild caution.
         logger.info("[Nexus] The Nexus is loading...")
-        
+
         // 注册按键绑定
         KeyBindings.register()
-
+        //注册事件监听
+        MainMenuListener()
+        logger.info("[Nexus] Load successfully")
     }
 }

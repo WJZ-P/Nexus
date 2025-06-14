@@ -55,8 +55,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
     // Core Elementa
-    implementation(include("gg.essential:elementa:706"))
-    modImplementation(include("gg.essential:universalcraft-1.16.2-fabric:401"))
+    implementation(include("gg.essential:elementa:708"))
+    modImplementation(include("gg.essential:universalcraft-1.16.2-fabric:406"))
     implementation("gg.essential:elementa-unstable-layoutdsl:706")
 }
 
