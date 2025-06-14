@@ -5,14 +5,17 @@ import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
+import gg.essential.elementa.effects.OutlineEffect
 import java.awt.Color
 
 class BaseButton(
     text: String, initialWidth: Float = 60f, initialHeight: Float = 20f, private var onClick: (() -> Unit)? = null
-) : UIBlock(Color.gray) {
+) : UIBlock() {
 
-    // 保存原始颜色用于动画效果
-    private val originalColor = Color.decode("#66ccff")
+    // 使用Minecraft风格的灰黑色主题
+    private val originalColor = Color(50, 50, 50, 200) // 深灰色背景
+    private val hoverColor = Color(70, 70, 70, 220)    // 悬停时稍亮的灰色
+    private val pressedColor = Color(30, 30, 30, 220)  // 按下时更暗的灰色
 
     // 内部文本组件
     private val textComponent: UIText
@@ -21,8 +24,13 @@ class BaseButton(
         // 设置按钮基本约束
         constrain {
             color = originalColor.toConstraint()
-            radius = 2.pixels()
+            radius = 10.pixels()
+            width = ChildBasedSizeConstraint(5f)
+            height = ChildBasedSizeConstraint(5f)
         }
+
+        // 添加白色边框效果（初始透明）
+        enableEffect(OutlineEffect(Color(0, 0, 0, 0), 1f))
 
         // 添加文本
         textComponent = UIText(text).constrain {
@@ -69,7 +77,10 @@ class BaseButton(
 
         // 悬停效果
         onMouseEnter {
-            animate { setColorAnimation(Animations.OUT_EXP, 0.85f, Color.DARK_GRAY.toConstraint()) }
+            animate {
+                setColorAnimation(Animations.OUT_EXP, 0.2f, hoverColor.toConstraint())
+
+            }
         }
 
         // 离开效果

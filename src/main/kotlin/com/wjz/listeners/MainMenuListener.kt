@@ -33,9 +33,8 @@ class MainMenuListener {
 
                 button.constrain {
                     x = CenterConstraint()
-                    y = CenterConstraint()+20.pixel
-                    color=Color.DARK_GRAY.toConstraint()
-                    textScale=2.pixel
+                    y = CenterConstraint() - 10.percent
+                    textScale = 3.pixel
                 }
 
                 //注册渲染事件
