@@ -30,8 +30,9 @@ class BaseButton(
         constrain {
             color = originalColor.toConstraint()
             radius = 10.pixels()
-            width = ChildBasedSizeConstraint(25f)
-            height = ChildBasedSizeConstraint(25f)
+            width = ChildBasedSizeConstraint() + 10.pixel
+            height = ChildBasedSizeConstraint()+5.pixel
+            textScale=3.pixel
         }
 
         // 添加白色边框效果
@@ -86,6 +87,7 @@ class BaseButton(
                     outlineEffect.color = Color(150, 150, 150, 0)
                 }.start()
             }
+            println("点击了按钮")
             onClick?.invoke()
         }
 
