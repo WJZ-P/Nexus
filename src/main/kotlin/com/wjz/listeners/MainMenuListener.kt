@@ -12,16 +12,17 @@ import net.minecraft.client.gui.screen.TitleScreen
 import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
+//回到主界面时进行渲染
 class MainMenuListener {
     private val window: Window = Window(ElementaVersion.V8)
     private val logger = LogManager.getLogger("wjz-nexus")
 
     init {
-        //对window进行调整
 
-        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
+        ScreenEvents.AFTER_INIT.register { _, screen, _, _ ->
             println("当前的窗口是：$screen")
             if (screen is TitleScreen) {
+                window.clearChildren() // 清除所有旧组件
                 //创建一个检查器
                 Inspector(window).constrain {
                     x = 20.pixel(true)

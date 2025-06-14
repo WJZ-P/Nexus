@@ -13,9 +13,14 @@ class BaseButton(
 ) : UIBlock() {
 
     // 使用Minecraft风格的灰黑色主题
-    private val originalColor = Color(50, 50, 50, 200) // 深灰色背景
-    private val hoverColor = Color(70, 70, 70, 220)    // 悬停时稍亮的灰色
+    private val originalColor = Color(50, 50, 50, 200) // 浅灰色
+    private val hoverColor = Color(70, 70, 70, 220)    // 悬停时稍微亮
     private val pressedColor = Color(30, 30, 30, 220)  // 按下时更暗的灰色
+    private val borderNormal = Color.BLACK
+    private val borderHover = Color.WHITE
+
+    // 动态边框效果
+    private val outlineEffect = OutlineEffect(borderNormal, 1f)
 
     // 内部文本组件
     private val textComponent: UIText
@@ -25,12 +30,12 @@ class BaseButton(
         constrain {
             color = originalColor.toConstraint()
             radius = 10.pixels()
-            width = ChildBasedSizeConstraint(5f)
-            height = ChildBasedSizeConstraint(5f)
+            width = ChildBasedSizeConstraint(25f)
+            height = ChildBasedSizeConstraint(25f)
         }
 
-        // 添加白色边框效果（初始透明）
-        enableEffect(OutlineEffect(Color(0, 0, 0, 0), 1f))
+        // 添加白色边框效果
+        enableEffect(outlineEffect)
 
         // 添加文本
         textComponent = UIText(text).constrain {
@@ -69,23 +74,37 @@ class BaseButton(
         // 点击效果：模拟按钮按下
         onMouseClick {
             animate {
-                setColorAnimation(Animations.OUT_EXP, 0.1f, Color.GRAY.toConstraint())
-                setColorAnimation(Animations.OUT_EXP, 0.1f, originalColor.toConstraint(), delay = 0.1f)
+                setColorAnimation(Animations.OUT_ELASTIC, 0.15f, pressedColor.toConstraint())
+                setColorAnimation(Animations.OUT_BOUNCE, 0.3f, originalColor.toConstraint(), delay = 0.15f)
             }
-            onClick?.invoke() // 执行回调
+            // 添加边框闪烁效果
+            outlineEffect.color = Color.WHITE
+            animate {
+                // 边框淡出
+                Thread {
+                    Thread.sleep(100)
+                    outlineEffect.color = Color(150, 150, 150, 0)
+                }.start()
+            }
+            onClick?.invoke()
         }
 
-        // 悬停效果
+        // 悬停效果 - 使用更平滑的动画
         onMouseEnter {
             animate {
-                setColorAnimation(Animations.OUT_EXP, 0.2f, hoverColor.toConstraint())
-
+                setColorAnimation(Animations.OUT_CIRCULAR, 0.25f, hoverColor.toConstraint())
             }
+            // 显示边框
+            outlineEffect.color = borderHover
         }
 
         // 离开效果
         onMouseLeave {
-            animate { setColorAnimation(Animations.OUT_EXP, 0.2f, originalColor.toConstraint()) }
+            animate {
+                setColorAnimation(Animations.OUT_CIRCULAR, 0.25f, originalColor.toConstraint())
+            }
+            // 隐藏边框
+            outlineEffect.color = borderNormal
         }
     }
 }
