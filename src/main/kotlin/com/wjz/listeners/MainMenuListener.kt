@@ -36,11 +36,9 @@ class MainMenuListener {
             val button = BaseButton("hi！我是一个按钮哦！！！！！") childOf window
 
             button.constrain {
-                x = CenterConstraint()
-                y = CenterConstraint() - 10.percent
+                x = 70.percent
+                y = CenterConstraint()
             }
-
-            logger.info("渲染主界面按钮成功")
 
             //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回主菜单的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->
@@ -53,10 +51,6 @@ class MainMenuListener {
             ScreenMouseEvents.afterMouseRelease(screen).register { _, mouseX, mouseY, buttonCode ->
                 window.mouseRelease()
             }
-            ScreenMouseEvents.afterMouseRelease(screen).register { _, mouseX, mouseY, buttonCode ->
-                window.mouseRelease()
-            }
-            logger.info("Screen事件注册成功!")
         }
 
     }
