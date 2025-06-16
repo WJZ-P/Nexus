@@ -5,6 +5,7 @@ import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.RelativeWindowConstraint
 import gg.essential.elementa.dsl.*
 import gg.essential.universal.UMatrixStack
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
@@ -33,12 +34,15 @@ class MainMenuListener {
             } childOf window
 
             //创建按钮
-            val button = BaseButton("hi！我是一个按钮哦！！！！！") childOf window
+            val button = BaseButton("我是一个按钮",) childOf window
 
             button.constrain {
-                x = 70.percent
+                x = CenterConstraint() + 35.percent
                 y = CenterConstraint()
             }
+            button.setToolTipText("哇哈哈")
+
+
 
             //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回主菜单的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->

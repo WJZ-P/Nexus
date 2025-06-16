@@ -1,23 +1,26 @@
 package com.wjz.ui.components.base
 
+import com.wjz.ui.components.ToolTip
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.*
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
+import gg.essential.universal.render.URenderPipeline
+import gg.essential.universal.shader.BlendState.Companion.ALPHA
 import gg.essential.universal.vertex.UBufferBuilder
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.sound.SoundEvents
 import java.awt.Color
-import gg.essential.universal.render.URenderPipeline
-import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.BlendState.Companion.ALPHA
+
 class BaseButton(
-    text: String, initialWidth: Float = 60f, initialHeight: Float = 20f, private var onClick: (() -> Unit)? = null
+    text: String,
+    private var onClick: (() -> Unit)? = null
 ) : UIBlock() {
 
     // 使用Minecraft风格的灰黑色主题
@@ -27,11 +30,16 @@ class BaseButton(
     private val borderNormal = Color.BLACK
     private val borderHover = Color.WHITE
 
+
     // 动态边框效果
     private val outlineEffect = OutlineEffect(borderNormal, 1f)
 
     // 内部文本组件
     private val textComponent: UIText
+
+    // ToolTip 相关属性
+    private var toolTipText: String? = null
+    private var toolTip: ToolTip? = null
 
     init {
         // 设置按钮基本约束
@@ -43,7 +51,7 @@ class BaseButton(
             textScale = 3.pixel
         }
 
-        // 添加白色边框效果
+        // 添加边框效果
         enableEffect(outlineEffect)
 
         // 添加文本
@@ -56,7 +64,12 @@ class BaseButton(
         // 设置按钮交互效果
         setupInteractions()
 
+    }
 
+
+    // 设置 ToolTip 文本
+    fun setToolTipText(text: String) = apply {
+        this.toolTipText = text
     }
 
     // 按钮尺寸更新方法
@@ -85,33 +98,39 @@ class BaseButton(
         // 点击效果：模拟按钮按下
         onMouseClick {
             //1.播放音效
-            MinecraftClient.getInstance().soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1F));
+            MinecraftClient.getInstance().soundManager.play(
+                PositionedSoundInstance.master(
+                    SoundEvents.UI_BUTTON_CLICK,
+                    1F
+                )
+            );
             animate {
                 setWidthAnimation(
                     Animations.OUT_EXP, // 使用一个缓出的动画曲线
                     0.1f,                 // 动画时长，要非常快！
-                    constraints.width - 3.pixel
+                    constraints.width - 0.pixel
                 )
                 setHeightAnimation(
                     Animations.OUT_EXP, // 使用一个缓出的动画曲线
                     0.1f,                 // 动画时长，要非常快！
-                    constraints.height - 2.pixel
+                    constraints.height - 1.pixel
                 )
             }
             println("点击了按钮")
             onClick?.invoke()
         }
+
         onMouseRelease {
             animate {
                 setWidthAnimation(
                     Animations.OUT_EXP, // 使用一个缓出的动画曲线
                     0.1f,                 // 动画时长，要非常快！
-                    constraints.width + 3.pixel
+                    constraints.width + 0.pixel
                 )
                 setHeightAnimation(
                     Animations.OUT_EXP, // 使用一个缓出的动画曲线
                     0.1f,                 // 动画时长，要非常快！
-                    constraints.height + 2.pixel
+                    constraints.height + 1.pixel
                 )
             }
         }
@@ -123,6 +142,17 @@ class BaseButton(
             }
             // 显示边框
             outlineEffect.color = borderHover
+
+            // 动态挂载 ToolTip
+            toolTipText?.let { text ->
+                if (toolTip == null) {
+                    toolTip = ToolTip(text).constrain {
+                        x = getLeft().pixels()
+                        y = (getTop() - 25f).pixels() // 显示在按钮上方
+                    } childOf parent
+                }
+                toolTip?.showTooltip()
+            }
         }
 
         // 离开效果
@@ -132,8 +162,11 @@ class BaseButton(
             }
             // 默认边框
             outlineEffect.color = borderNormal
+            // 隐藏 ToolTip
+            toolTip?.hideTooltip()
         }
     }
+
     companion object {
         private val PIPELINE = URenderPipeline.builderWithDefaultShader(
             "essential:menu_button",
