@@ -5,6 +5,8 @@ import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.MaxConstraint
+import gg.essential.elementa.constraints.MinConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
@@ -46,8 +48,8 @@ class BaseButton(
         constrain {
             color = originalColor.toConstraint()
             radius = 10.pixels()
-            width = ChildBasedSizeConstraint() + 10.pixel
-            height = ChildBasedSizeConstraint() + 5.pixel
+            width = MaxConstraint(ChildBasedSizeConstraint() + 10.pixel, 18.pixel)
+            height = ChildBasedSizeConstraint() + 8.pixel
             textScale = 3.pixel
         }
 
@@ -105,16 +107,16 @@ class BaseButton(
                 )
             );
             animate {
-                setWidthAnimation(
-                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-                    0.1f,                 // 动画时长，要非常快！
-                    constraints.width - 0.pixel
-                )
-                setHeightAnimation(
-                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-                    0.1f,                 // 动画时长，要非常快！
-                    constraints.height - 1.pixel
-                )
+//                setWidthAnimation(
+//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
+//                    0.1f,                 // 动画时长，要非常快！
+//                    constraints.width - 0.pixel
+//                )
+//                setHeightAnimation(
+//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
+//                    0.1f,                 // 动画时长，要非常快！
+//                    constraints.height - 1.pixel
+//                )
             }
             println("点击了按钮")
             onClick?.invoke()
@@ -122,16 +124,16 @@ class BaseButton(
 
         onMouseRelease {
             animate {
-                setWidthAnimation(
-                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-                    0.1f,                 // 动画时长，要非常快！
-                    constraints.width + 0.pixel
-                )
-                setHeightAnimation(
-                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-                    0.1f,                 // 动画时长，要非常快！
-                    constraints.height + 1.pixel
-                )
+//                setWidthAnimation(
+//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
+//                    0.1f,                 // 动画时长，要非常快！
+//                    constraints.width + 0.pixel
+//                )
+//                setHeightAnimation(
+//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
+//                    0.1f,                 // 动画时长，要非常快！
+//                    constraints.height + 1.pixel
+//                )
             }
         }
 
