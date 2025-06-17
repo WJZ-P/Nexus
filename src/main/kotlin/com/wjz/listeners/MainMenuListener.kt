@@ -4,21 +4,16 @@ import com.wjz.ui.components.base.BaseButton
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.RelativeWindowConstraint
-import gg.essential.elementa.dsl.*
+import gg.essential.elementa.dsl.childOf
+import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.pixel
+import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.fabricmc.fabric.api.client.screen.v1.Screens
 import net.minecraft.client.gui.screen.TitleScreen
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import org.apache.logging.log4j.LogManager
-import java.awt.Color
-import kotlin.math.log
-import kotlin.math.roundToInt
 
 //回到主界面时进行渲染
 class MainMenuListener {
