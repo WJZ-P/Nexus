@@ -1,5 +1,6 @@
 package com.wjz.listeners
 
+import com.wjz.ui.components.ToolTip
 import com.wjz.ui.components.base.BaseButton
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.components.Window
@@ -42,11 +43,24 @@ class MainMenuListener {
             //按钮的约束跟原版按钮对齐。
             val buttonList = Screens.getButtons(screen)
 
-                button.constrain {
-                    x = (buttonList[2].x + buttonList[2].width + BUTTON_MARGIN).pixels
-                    y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
-                }
+            button.constrain {
+                x = (buttonList[2].x + buttonList[2].width + BUTTON_MARGIN).pixels
+                y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
+            }
             //button.setToolTipText("哇哈哈")
+
+            //尝试直接创建一个toolTip试试
+
+            val toolTip = ToolTip("嘻嘻哈哈") constrain {
+                x = 10.pixel
+                y = 10.pixel
+            } childOf window
+
+            toolTip.hide()
+
+            button.setClickListener {
+                toolTip.unhide()
+            }
 
             //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回主菜单的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->

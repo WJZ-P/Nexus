@@ -41,7 +41,6 @@ class BaseButton(
 
     // ToolTip 相关属性
     private var toolTipText: String? = null
-    private var toolTip: ToolTip? = null
 
     init {
         // 设置按钮基本约束
@@ -67,7 +66,6 @@ class BaseButton(
         setupInteractions()
 
     }
-
 
     // 设置 ToolTip 文本
     fun setToolTipText(text: String) = apply {
@@ -144,18 +142,8 @@ class BaseButton(
             }
             // 显示边框
             outlineEffect.color = borderHover
-
-            // 动态挂载 ToolTip
-            toolTipText?.let { text ->
-                if (toolTip == null) {
-                    toolTip = ToolTip(text).constrain {
-                        x = getLeft().pixels()
-                        y = (getTop() - 25f).pixels() // 显示在按钮上方
-                    } childOf parent
-                }
-                toolTip?.showTooltip()
-            }
         }
+
 
         // 离开效果
         onMouseLeave {
@@ -164,8 +152,7 @@ class BaseButton(
             }
             // 默认边框
             outlineEffect.color = borderNormal
-            // 隐藏 ToolTip
-            toolTip?.hideTooltip()
+
         }
     }
 
