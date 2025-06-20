@@ -3,6 +3,7 @@ package com.wjz.listeners
 import com.wjz.ui.components.ToolTip
 import com.wjz.ui.components.base.BaseButton
 import gg.essential.elementa.ElementaVersion
+import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.dsl.childOf
@@ -35,6 +36,14 @@ class MainMenuListener {
             Inspector(window).constrain {
                 x = 20.pixel(true)
                 y = 15.pixel()
+            } childOf window
+
+            //直接放置一个满屏的container，看看会不会覆盖
+            UIContainer().constrain{
+                x=0.pixel
+                y=0.pixel
+                width=scaledWidth.pixel
+                height=scaledHeight.pixel
             } childOf window
 
             //创建按钮
