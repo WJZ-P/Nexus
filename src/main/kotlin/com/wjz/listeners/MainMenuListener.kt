@@ -1,5 +1,6 @@
 package com.wjz.listeners
 
+import com.wjz.ui.MainMenuScreen
 import com.wjz.ui.components.ToolTip
 import com.wjz.ui.components.base.BaseButton
 import gg.essential.elementa.ElementaVersion
@@ -38,49 +39,41 @@ class MainMenuListener {
                 y = 15.pixel()
             } childOf window
 
+            val mainMenuScreen = MainMenuScreen(scaledWidth, scaledHeight, screen) childOf window
+
             //直接放置一个满屏的container，看看会不会覆盖
-            UIContainer().constrain{
-                x=0.pixel
-                y=0.pixel
-                width=scaledWidth.pixel
-                height=scaledHeight.pixel
-            } childOf window
+//            UIContainer().constrain{
+//                x=0.pixel
+//                y=0.pixel
+//                width=scaledWidth.pixel
+//                height=scaledHeight.pixel
+//            } childOf window
 
-            //创建按钮
-            val button = BaseButton("!") childOf window
-
-            //按钮的约束跟原版按钮对齐。
-            val buttonList = Screens.getButtons(screen)
-
-            button.constrain {
-                x = (buttonList[2].x + buttonList[2].width + BUTTON_MARGIN).pixels
-                y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
-            }
+//            //创建按钮
+//            val button = BaseButton("!") childOf window
+//
+//            //按钮的约束跟原版按钮对齐。
+//            val buttonList = Screens.getButtons(screen)
+//
+//            button.constrain {
+//                x = (buttonList[2].x + buttonList[2].width + BUTTON_MARGIN).pixels
+//                y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
+//            }
             //button.setToolTipText("哇哈哈")
 
-            //尝试直接创建一个toolTip试试
 
-            val toolTip = ToolTip("嘻嘻哈哈") constrain {
-                x = 10.pixel
-                y = 10.pixel
-            } childOf window
-
-            toolTip.hide()
-
-            button.setClickListener {
-                toolTip.unhide()
-            }
-
-            //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回主菜单的时候就不渲染了。
+            //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->
                 window.draw(UMatrixStack(matrices))
             }
             //注册鼠标事件处理函数
             ScreenMouseEvents.afterMouseClick(screen).register { _, mouseX, mouseY, buttonCode ->
                 window.mouseClick(mouseX, mouseY, buttonCode)
+                mainMenuScreen.mouseClick(mouseX, mouseY, buttonCode)
             }
             ScreenMouseEvents.afterMouseRelease(screen).register { _, mouseX, mouseY, buttonCode ->
                 window.mouseRelease()
+                mainMenuScreen.mouseRelease()
             }
 
         }
