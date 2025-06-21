@@ -1,6 +1,6 @@
 package com.wjz
 
-import com.wjz.listeners.MainMenuListener
+import com.wjz.listeners.ScreenListener
 import net.fabricmc.api.ModInitializer
 import org.apache.logging.log4j.LogManager
 
@@ -16,7 +16,7 @@ object Nexus : ModInitializer {
         // 注册按键绑定
         KeyBindings.register()
         //注册事件监听
-        MainMenuListener()
+        ScreenListener()
         logger.info("[Nexus] Load successfully")
     }
 }

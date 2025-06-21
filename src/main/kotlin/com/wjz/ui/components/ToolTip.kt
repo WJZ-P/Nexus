@@ -18,7 +18,7 @@ class ToolTip(private val text: String) : UIBlock() {
     init {
         // 设置背景的宽度为固定最大宽度，高度根据子组件自适应
         constrain {
-            width = CenterConstraint() + (2 * padding).pixels
+            width =  ChildBasedSizeConstraint() + (2 * padding).pixels
             height = ChildBasedSizeConstraint() + (1 * padding).pixels
         }
 
@@ -32,8 +32,6 @@ class ToolTip(private val text: String) : UIBlock() {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf this
-
-        // 初始状态隐藏
 
     }
 

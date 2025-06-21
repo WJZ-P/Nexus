@@ -1,86 +1,50 @@
 package com.wjz.listeners
 
-import com.wjz.ui.components.ToolTip
-import com.wjz.ui.components.base.BaseButton
+import com.wjz.ui.MainMenuScreen
 import gg.essential.elementa.ElementaVersion
-import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.Window
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixel
-import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
-import net.fabricmc.fabric.api.client.screen.v1.Screens
 import net.minecraft.client.gui.screen.TitleScreen
 import org.apache.logging.log4j.LogManager
 
 //回到主界面时进行渲染
-class MainMenuListener {
+class ScreenListener {
     companion object {
         private val window: Window = Window(ElementaVersion.V8)
         private val logger = LogManager.getLogger("wjz-nexus")
-        private const val BUTTON_MARGIN: Int = 5
     }
-
 
     init {
         ScreenEvents.AFTER_INIT.register { client, screen, scaledWidth, scaledHeight ->
             println("当前的窗口是：$screen")
             if (screen !is TitleScreen) return@register //不是就直接退出
-
             window.clearChildren() // 清除所有旧组件
+
+            val mainMenuScreen = MainMenuScreen(scaledWidth, scaledHeight, screen) childOf window
             //创建一个检查器
-            Inspector(window).constrain {
+            Inspector(mainMenuScreen).constrain {
                 x = 20.pixel(true)
                 y = 15.pixel()
             } childOf window
 
-            //直接放置一个满屏的container，看看会不会覆盖
-            UIContainer().constrain{
-                x=0.pixel
-                y=0.pixel
-                width=scaledWidth.pixel
-                height=scaledHeight.pixel
-            } childOf window
-
-            //创建按钮
-            val button = BaseButton("!") childOf window
-
-            //按钮的约束跟原版按钮对齐。
-            val buttonList = Screens.getButtons(screen)
-
-            button.constrain {
-                x = (buttonList[2].x + buttonList[2].width + BUTTON_MARGIN).pixels
-                y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
-            }
-            //button.setToolTipText("哇哈哈")
-
-            //尝试直接创建一个toolTip试试
-
-            val toolTip = ToolTip("嘻嘻哈哈") constrain {
-                x = 10.pixel
-                y = 10.pixel
-            } childOf window
-
-            toolTip.hide()
-
-            button.setClickListener {
-                toolTip.unhide()
-            }
-
-            //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回主菜单的时候就不渲染了。
+            //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->
                 window.draw(UMatrixStack(matrices))
             }
             //注册鼠标事件处理函数
             ScreenMouseEvents.afterMouseClick(screen).register { _, mouseX, mouseY, buttonCode ->
                 window.mouseClick(mouseX, mouseY, buttonCode)
+                mainMenuScreen.mouseClick(mouseX, mouseY, buttonCode)
             }
             ScreenMouseEvents.afterMouseRelease(screen).register { _, mouseX, mouseY, buttonCode ->
                 window.mouseRelease()
+                mainMenuScreen.mouseRelease()
             }
 
         }

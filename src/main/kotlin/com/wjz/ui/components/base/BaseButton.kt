@@ -2,11 +2,10 @@ package com.wjz.ui.components.base
 
 import com.wjz.ui.components.ToolTip
 import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.MaxConstraint
-import gg.essential.elementa.constraints.MinConstraint
+import gg.essential.elementa.components.Window
+import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
@@ -19,28 +18,29 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.sound.SoundEvents
 import java.awt.Color
+import javax.tools.Tool
 
 class BaseButton(
     text: String,
-    private var onClick: (() -> Unit)? = null
+    private val toolTipText: String?,
+    private val container: UIContainer?,
+    private var onClick: (() -> Unit)? = null,
 ) : UIBlock() {
 
     // 使用Minecraft风格的灰黑色主题
-    private val originalColor = Color(50, 50, 50, 200) // 浅灰色
-    private val hoverColor = Color(70, 70, 70, 220)    // 悬停时稍微亮
-    private val pressedColor = Color(30, 30, 30, 220)  // 按下时更暗的灰色
+    private val originalColor = Color(50, 50, 50, 230) // 浅灰色
+    private val hoverColor = Color(70, 70, 70, 230)    // 悬停时稍微亮
+    private val pressedColor = Color(30, 30, 30, 230)  // 按下时更暗的灰色
     private val borderNormal = Color.BLACK
     private val borderHover = Color.WHITE
 
+    private val toolTip: ToolTip? = toolTipText?.let { ToolTip(it) }
 
     // 动态边框效果
     private val outlineEffect = OutlineEffect(borderNormal, 1f)
 
     // 内部文本组件
     private val textComponent: UIText
-
-    // ToolTip 相关属性
-    private var toolTipText: String? = null
 
     init {
         // 设置按钮基本约束
@@ -51,6 +51,7 @@ class BaseButton(
             height = ChildBasedSizeConstraint() + 8.pixel
             textScale = 3.pixel
         }
+        //设置提示词的约束
 
         // 添加边框效果
         enableEffect(outlineEffect)
@@ -61,32 +62,12 @@ class BaseButton(
             y = CenterConstraint()
             color = Color.WHITE.toConstraint()
         } childOf this
+        //延后添加到container中，否则会报错。
+        Window.Companion.enqueueRenderOperation { toolTip?.childOf(container!!)?.hide() }
 
         // 设置按钮交互效果
         setupInteractions()
-
     }
-
-    // 设置 ToolTip 文本
-    fun setToolTipText(text: String) = apply {
-        this.toolTipText = text
-    }
-
-    // 按钮尺寸更新方法
-    fun setSize(width: Float, height: Float) = apply {
-        constrain {
-            this.width = width.pixels()
-            this.height = height.pixels()
-        }
-    }
-
-    // 更新按钮文本
-    fun setText(text: String) = apply {
-        textComponent.setText(text)
-    }
-
-    // 获取当前文本
-    fun getText() = textComponent.getText()
 
     // 自定义点击监听器
     fun setClickListener(listener: () -> Unit) = apply {
@@ -105,16 +86,7 @@ class BaseButton(
                 )
             );
             animate {
-//                setWidthAnimation(
-//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-//                    0.1f,                 // 动画时长，要非常快！
-//                    constraints.width - 0.pixel
-//                )
-//                setHeightAnimation(
-//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-//                    0.1f,                 // 动画时长，要非常快！
-//                    constraints.height - 1.pixel
-//                )
+                setColorAnimation(Animations.OUT_CIRCULAR, 0.25f, pressedColor.toConstraint())
             }
             println("点击了按钮")
             onClick?.invoke()
@@ -122,16 +94,7 @@ class BaseButton(
 
         onMouseRelease {
             animate {
-//                setWidthAnimation(
-//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-//                    0.1f,                 // 动画时长，要非常快！
-//                    constraints.width + 0.pixel
-//                )
-//                setHeightAnimation(
-//                    Animations.OUT_EXP, // 使用一个缓出的动画曲线
-//                    0.1f,                 // 动画时长，要非常快！
-//                    constraints.height + 1.pixel
-//                )
+                setColorAnimation(Animations.OUT_CIRCULAR, 0.25f, originalColor.toConstraint())
             }
         }
 
@@ -142,6 +105,7 @@ class BaseButton(
             }
             // 显示边框
             outlineEffect.color = borderHover
+            toolTip?.let { Window.enqueueRenderOperation { it.unhide(); positionToolTip(it) } }
         }
 
 
@@ -152,13 +116,76 @@ class BaseButton(
             }
             // 默认边框
             outlineEffect.color = borderNormal
-
+            Window.enqueueRenderOperation { toolTip?.hide() }
         }
     }
 
+    // 动态调整 ToolTip 位置，确保不溢出屏幕
+    private fun positionToolTip(toolTip: ToolTip) {
+        // 获取按钮位置和大小
+        val buttonX = getLeft()
+        val buttonY = getTop()
+        val buttonWidth = getWidth()
+        val buttonHeight = getHeight()
+
+        // 获取屏幕尺寸
+        val screenWidth = Window.of(this).getWidth()
+        val screenHeight = Window.of(this).getHeight()
+
+        // 默认位置：按钮上方，水平居中
+        var toolTipX = buttonX + (buttonWidth / 2) - (toolTip.getWidth() / 2)
+        var toolTipY = buttonY - toolTip.getHeight() - 5 // 上方，留 5 像素间隙
+
+        // 如果溢出顶部，尝试放置在按钮下方
+        if (toolTipY < 0) {
+            toolTipY = buttonY + buttonHeight + 5 // 移到按钮下方
+        }
+        // 如果下方也溢出，贴近屏幕底部
+        if (toolTipY + toolTip.getHeight() > screenHeight) {
+            toolTipY = screenHeight - toolTip.getHeight() - 5
+        }
+        // 如果溢出右侧，贴近屏幕右边
+        if (toolTipX + toolTip.getWidth() > screenWidth) {
+            toolTipX = screenWidth - toolTip.getWidth() - 5
+        }
+        // 如果溢出左侧，贴近屏幕左边
+        if (toolTipX < 0) {
+            toolTipX = 5F
+        }
+
+        // 设置 ToolTip 位置
+        toolTip.setX(toolTipX.pixels())
+        toolTip.setY(toolTipY.pixels())
+    }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        super.draw(matrixStack)
+
+        val left = getLeft().toDouble()
+        val top = getTop().toDouble()
+        val right = getRight().toDouble()
+        val bottom = getBottom().toDouble()
+
+
+        // 定义颜色
+        val baseColor = Color(50, 50, 50, 150)      // 深灰色主体，带透明度
+        val highlightColor = Color(70, 70, 70, 220) // 稍亮的灰色高亮
+        val shadowColor = Color(30, 30, 30, 220)    // 稍暗的灰色阴影
+
+        // 调用 drawButton 函数绘制按钮
+        drawButton(
+            matrixStack,
+            left, top, right, bottom,
+            baseColor, highlightColor, shadowColor, outlineEffect.color,
+            true, true, true, true  // 绘制所有四边的轮廓
+        )
+
+    }
+
+
     companion object {
         private val PIPELINE = URenderPipeline.builderWithDefaultShader(
-            "essential:menu_button",
+            "nexus:base_button",
             UGraphics.DrawMode.QUADS,
             UGraphics.CommonVertexFormats.POSITION_COLOR,
         ).apply {
@@ -167,13 +194,14 @@ class BaseButton(
         }.build()
 
         private val PIPELINE_TEXTURED = URenderPipeline.builderWithDefaultShader(
-            "essential:menu_button_textured",
+            "nexus:base_button_textured",
             UGraphics.DrawMode.QUADS,
             UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR,
         ).apply {
             blendState = ALPHA
             depthTest = URenderPipeline.DepthTest.Always
         }.build()
+
 
         fun drawButton(
             matrixStack: UMatrixStack,
@@ -191,35 +219,35 @@ class BaseButton(
             hasRight: Boolean,
         ) {
             UBufferBuilder.create(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR).apply {
-                // Base
-                pos(matrixStack, left, top, 0.0).color(baseColor).endVertex()
-                pos(matrixStack, left, bottom, 0.0).color(baseColor).endVertex()
-                pos(matrixStack, right, bottom, 0.0).color(baseColor).endVertex()
-                pos(matrixStack, right, top, 0.0).color(baseColor).endVertex()
+                // 基础颜色
+//                pos(matrixStack, left, top, 0.0).color(baseColor).endVertex()
+//                pos(matrixStack, left, bottom, 0.0).color(baseColor).endVertex()
+//                pos(matrixStack, right, bottom, 0.0).color(baseColor).endVertex()
+//                pos(matrixStack, right, top, 0.0).color(baseColor).endVertex()
 
-                // Highlight left
+                // 左侧高光颜色
                 pos(matrixStack, left, top, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, left, bottom, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, left + 1.0, bottom, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, left + 1.0, top, 0.0).color(highlightColor).endVertex()
-                // Highlight top
+                // 上方高光
                 pos(matrixStack, left + 1.0, top, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, left + 1.0, top + 1.0, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, right, top + 1.0, 0.0).color(highlightColor).endVertex()
                 pos(matrixStack, right, top, 0.0).color(highlightColor).endVertex()
 
-                // Shadow right
+                // 右侧阴影
                 pos(matrixStack, right, bottom, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, right, top, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, right - 1.0, top, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, right - 1.0, bottom, 0.0).color(shadowColor).endVertex()
-                // Shadow bottom
+                // 底部阴影
                 pos(matrixStack, right - 1.0, bottom, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, right - 1.0, bottom - 2.0, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, left, bottom - 2.0, 0.0).color(shadowColor).endVertex()
                 pos(matrixStack, left, bottom, 0.0).color(shadowColor).endVertex()
 
-                // Outline
+                // 绘制Outline
                 drawOutline(matrixStack, left, top, right, bottom, outlineColor, hasTop, hasBottom, hasLeft, hasRight)
             }.build()?.drawAndClose(PIPELINE)
         }
