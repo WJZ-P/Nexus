@@ -9,6 +9,8 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
+import gg.essential.elementa.effects.RecursiveFadeEffect
+import gg.essential.elementa.transitions.RecursiveFadeInTransition
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.render.URenderPipeline
@@ -33,6 +35,7 @@ class BaseButton(
     private val pressedColor = Color(30, 30, 30, 230)  // 按下时更暗的灰色
     private val borderNormal = Color.BLACK
     private val borderHover = Color.WHITE
+    private var timerId: Int? = null;
 
     private val toolTip: ToolTip? = toolTipText?.let { ToolTip(it) }
 
@@ -105,7 +108,17 @@ class BaseButton(
             }
             // 显示边框
             outlineEffect.color = borderHover
-            toolTip?.let { Window.enqueueRenderOperation { it.unhide(); positionToolTip(it) } }
+            //加一个延时实现
+            timerId = startDelay(400) {
+                toolTip?.let {
+                    Window.enqueueRenderOperation {
+                        it.unhide();
+                        positionToolTip(it)
+                        RecursiveFadeInTransition(0.2f,Animations.OUT_CIRCULAR).transition(it)
+                    }
+                }
+            }
+
         }
 
 
@@ -117,6 +130,7 @@ class BaseButton(
             // 默认边框
             outlineEffect.color = borderNormal
             Window.enqueueRenderOperation { toolTip?.hide() }
+            if (timerId != null) {stopDelay(timerId!!);timerId = null}
         }
     }
 

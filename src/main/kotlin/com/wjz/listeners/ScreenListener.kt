@@ -28,10 +28,10 @@ class ScreenListener {
 
             val mainMenuScreen = MainMenuScreen(scaledWidth, scaledHeight, screen) childOf window
             //创建一个检查器
-            Inspector(mainMenuScreen).constrain {
-                x = 20.pixel(true)
-                y = 15.pixel()
-            } childOf window
+//            Inspector(mainMenuScreen).constrain {
+//                x = 20.pixel(true)
+//                y = 15.pixel()
+//            } childOf window
 
             //这里不需要担心重复注册的问题，实测如果只注册一次，再次返回的时候就不渲染了。
             ScreenEvents.afterRender(screen).register { screen1, matrices, mouseX, mouseY, tickDelta ->
@@ -50,34 +50,3 @@ class ScreenListener {
         }
     }
 }
-
-
-// 检查这个屏幕是不是主菜单 (TitleScreen)
-//            if (screen is TitleScreen) {
-//                // 获取屏幕的按钮列表并添加一个我们自己的新按钮
-//
-//                val buttons = Screens.getButtons(screen)//获取当前屏幕上的按钮。
-//
-//                val x = (scaledWidth * 0.75).roundToInt()
-//                val y = buttons[2].y
-//
-//                Screens.getButtons(screen)
-//                    .add(
-//                        ButtonWidget(
-//                            x,
-//                            y,
-//                            100,
-//                            20,
-//                            TranslatableText("text"),
-//                            ButtonWidget.PressAction {
-//                                println("点击了按钮")
-//                            })
-//                    );
-//            }
-//}
-
-
-//        //渲染事件
-//        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
-//
-//        }

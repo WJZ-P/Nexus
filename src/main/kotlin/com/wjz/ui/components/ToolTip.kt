@@ -8,7 +8,7 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import java.awt.Color
 
-class ToolTip(private val text: String) : UIBlock() {
+class ToolTip(text: String) : UIBlock() {
     // 定义内边距
     private val padding = 4f
 
@@ -18,12 +18,12 @@ class ToolTip(private val text: String) : UIBlock() {
     init {
         // 设置背景的宽度为固定最大宽度，高度根据子组件自适应
         constrain {
-            width =  ChildBasedSizeConstraint() + (2 * padding).pixels
+            width = ChildBasedSizeConstraint() + (2 * padding).pixels
             height = ChildBasedSizeConstraint() + (1 * padding).pixels
         }
 
         // 设置背景颜色为深色半透明
-        setColor(Color(20, 20, 20, 230))
+        setColor(Color(20, 20, 20, 220))
         // 添加灰色边框效果
         effect(OutlineEffect(Color(80, 80, 80, 200), 1f))
 
@@ -31,8 +31,10 @@ class ToolTip(private val text: String) : UIBlock() {
         textComponent constrain {
             x = CenterConstraint()
             y = CenterConstraint()
+            textScale = 1f.pixel
         } childOf this
 
     }
+
 
 }
