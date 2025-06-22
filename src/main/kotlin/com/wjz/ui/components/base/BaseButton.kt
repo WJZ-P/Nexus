@@ -1,15 +1,11 @@
 package com.wjz.ui.components.base
 
 import com.wjz.ui.components.ToolTip
-import gg.essential.elementa.components.UIBlock
-import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.components.Window
+import gg.essential.elementa.components.*
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
-import gg.essential.elementa.effects.RecursiveFadeEffect
 import gg.essential.elementa.transitions.RecursiveFadeInTransition
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
@@ -20,12 +16,12 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.sound.SoundEvents
 import java.awt.Color
-import javax.tools.Tool
 
 class BaseButton(
-    text: String,
-    private val toolTipText: String?,
-    private val container: UIContainer?,
+    text: String?,
+    toolTipText: String? = null,
+    private val container: UIContainer? = null,
+    private val svgName: String? = null,
     private var onClick: (() -> Unit)? = null,
 ) : UIBlock() {
 
@@ -36,14 +32,30 @@ class BaseButton(
     private val borderNormal = Color.BLACK
     private val borderHover = Color.WHITE
     private var timerId: Int? = null;
+    private val outlineEffect = OutlineEffect(borderNormal, 1f)// 动态边框效果
 
+    //设置toolTip
     private val toolTip: ToolTip? = toolTipText?.let { ToolTip(it) }
 
-    // 动态边框效果
-    private val outlineEffect = OutlineEffect(borderNormal, 1f)
+    //设置text
+    private val textComponent: UIText? = text?.let {
+        UIText(text).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            color = Color.WHITE.toConstraint()
+        }
+    }
 
-    // 内部文本组件
-    private val textComponent: UIText
+    //设置svg
+    private val svgComponent: SVGComponent? = svgName?.let {
+        println("当前图标的是/src/assets/icon/${it}.svg")
+        SVGComponent.ofResource("wjz-nexus:icon/${it}.svg") constrain {
+            x = 2.pixels()
+            y = SiblingConstraint(padding = 2f)
+            width = 50.pixels()
+            height = 50.pixels()
+        }
+    }
 
     init {
         // 设置按钮基本约束
@@ -54,18 +66,16 @@ class BaseButton(
             height = ChildBasedSizeConstraint() + 8.pixel
             textScale = 3.pixel
         }
-        //设置提示词的约束
 
         // 添加边框效果
         enableEffect(outlineEffect)
 
-        // 添加文本
-        textComponent = UIText(text).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            color = Color.WHITE.toConstraint()
-        } childOf this
-        //延后添加到container中，否则会报错。
+        // 添加文本到组件中
+        textComponent?.childOf(this)
+        //添加图标
+        svgComponent?.childOf(this)
+
+        //延后添加toolTip到container中，否则会报错。
         Window.Companion.enqueueRenderOperation { toolTip?.childOf(container!!)?.hide() }
 
         // 设置按钮交互效果
@@ -114,7 +124,7 @@ class BaseButton(
                     Window.enqueueRenderOperation {
                         it.unhide();
                         positionToolTip(it)
-                        RecursiveFadeInTransition(0.2f,Animations.OUT_CIRCULAR).transition(it)
+                        RecursiveFadeInTransition(0.2f, Animations.OUT_CIRCULAR).transition(it)
                     }
                 }
             }
@@ -130,7 +140,9 @@ class BaseButton(
             // 默认边框
             outlineEffect.color = borderNormal
             Window.enqueueRenderOperation { toolTip?.hide() }
-            if (timerId != null) {stopDelay(timerId!!);timerId = null}
+            if (timerId != null) {
+                stopDelay(timerId!!);timerId = null
+            }
         }
     }
 
