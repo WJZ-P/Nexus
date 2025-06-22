@@ -1,6 +1,7 @@
 package com.wjz.ui
 
 import com.wjz.ui.components.base.BaseButton
+import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.childOf
@@ -39,6 +40,11 @@ class MainMenuScreen(
             y = (buttonList[2].y + 1).pixels //这里+1是为了确保对齐。
         } childOf container
         //按钮要渐入
+
+    }
+
+    //增加主菜单，点击按钮触发。
+    class MainOption : UIComponent() {
 
     }
 }
