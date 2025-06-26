@@ -49,13 +49,15 @@ class BaseButton(
     //设置svg
     private val svgComponent: SVGComponent? = svgName?.let {
         println("当前的地址是icon/${it}.svg")
-        //尝试创建
-        SVGComponent.ofResource("textures/icon/${it}.svg") constrain {
+        //尝试创建一个URL路径
+
+        val svgComponent= SVGComponent.ofResource("textures/icon/${it}.svg") constrain {
             x = 2.pixels()
             y = SiblingConstraint(padding = 2f)
             width = 50.pixels()
             height = 50.pixels()
         }
+        return svgComponent;
     }
 
     init {
